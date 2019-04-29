@@ -228,7 +228,7 @@ void Main() {
 				//HPバー
 				Rect(10 * 0.75, 740 * 0.75, 1590 * 0.75, 50 * 0.75).draw(Palette::Black);
 				Rect(10 * 0.75, 740 * 0.75, 1590 * game_hp / 100 * 0.75, 50 * 0.75).draw(Palette::Red);
-				Rect(10 * 0.75, 740 * 0.75, 1590 * 0.75, 50 * 0.75).drawFrame(10,0);
+				Rect(10 * 0.75, 740 * 0.75, 1590 * 0.75, 50 * 0.75).drawFrame(10 * 0.75, 0);
 				continue;
 			}
 			else if (MouseL.down()) {
