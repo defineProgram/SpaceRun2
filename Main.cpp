@@ -10,7 +10,7 @@ struct Rocket {
 struct Brock {
 	double x, y, degree;
 	double speed, size;
-	int color_red, color_green, color_blue;
+	int H;
 	int near;
 };
 
@@ -247,7 +247,7 @@ void Main() {
 				}
 				for (auto& p : brock) {
 					Circle brock_p(p.x, p.y, p.size);
-					if (gaming_time.s() > red_brock)brock_p.draw(Color(p.color_red + 100, p.color_green + 100, p.color_blue + 100));
+					if (gaming_time.s() > red_brock)brock_p.draw(HSV(p.H));
 					else brock_p.draw(Palette::Red);
 				}
 				if (game_stop)font_75_italy(U"クリックして再開").drawAt(800 * 0.75, 400 * 0.75);
@@ -292,23 +292,15 @@ void Main() {
 			if (System::FrameCount() % (120 / (difficulty + 1)) == 0) {
 				double start_x = rand() % 2000 - 400, end_x = rand() % 1200;
 				double degree = 90 - ToDegrees(atan2(500, end_x - start_x));
-				brock.push_back({ start_x,0.,degree,gaming_time.s() / 20 * difficulty * 0.75 + 2 * (difficulty + 1) * 0.75,gaming_time.s() / 10 * difficulty * 0.75 + 5,Random(0,255),Random(0,255),Random(0,255),10000 });
+				brock.push_back({ start_x,0.,degree,gaming_time.s() / 20 * difficulty * 0.75 + 2 * (difficulty + 1) * 0.75,gaming_time.s() / 10 * difficulty * 0.75 + 5,Random(0,360),10000 });
 			}
 			else if (System::FrameCount() % (120 / (difficulty + 1)) == 120 / (difficulty + 1) / 2) {
 				double start_x = rand() % 2000 - 400, end_x = rocket.x + Random(-300, 300);
 				double degree = 90 - ToDegrees(atan2(rocket.y, end_x - start_x));
-				brock.push_back({ start_x,0.,degree,gaming_time.s() / 20 * difficulty * 0.75 + 2 * (difficulty + 1) * 0.75,gaming_time.s() / 10 * difficulty * 0.75 + 5,Random(0,255),Random(0,255),Random(0,255),10000 });
+				brock.push_back({ start_x,0.,degree,gaming_time.s() / 20 * difficulty * 0.75 + 2 * (difficulty + 1) * 0.75,gaming_time.s() / 10 * difficulty * 0.75 + 5,Random(0,360),10000 });
 			}
 			//ブロックの当たり判定
 			for (auto& p : brock) {
-				if (abs(p.color_red - p.color_blue) <= 50) {
-					if (p.color_blue >= 80)p.color_red = p.color_blue - 80;
-					else p.color_red = p.color_blue + 80;
-				}
-				if (abs(p.color_green - p.color_blue) <= 50) {
-					if (p.color_blue >= 80)p.color_green = p.color_blue - 80;
-					else p.color_green = p.color_blue + 80;
-				}
 				Circle brock_p(p.x, p.y, p.size);
 				//ロケットの当たり判定
 				if (rocket_upper.rotatedAt(rocket.x, rocket.y, ToRadians(rocket.degree)).intersects(brock_p) || rocket_lower.rotatedAt(rocket.x, rocket.y, ToRadians(rocket.degree)).intersects(brock_p)) {
@@ -332,7 +324,7 @@ void Main() {
 					brock.pop_back();
 					continue;
 				}
-				if (gaming_time.s() > red_brock)brock_p.draw(Color(p.color_red + 100, p.color_green + 100, p.color_blue + 100));
+				if (gaming_time.s() > red_brock)brock_p.draw(HSV(p.H));
 				else brock_p.draw(Palette::Red);
 				//ブロックの移動
 				p.x += cos(ToRadians(90 - p.degree)) * System::DeltaTime() * p.speed * 60;
