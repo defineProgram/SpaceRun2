@@ -45,6 +45,7 @@ void Main() {
 	Rocket rocket;
 	rocket.x = 600., rocket.y = 450, rocket.degree = 0.;
 	Texture twitter_rink(U"GameData/twitter.png");
+	Texture space(U"GameData/space.png");
 	//弾
 	vector<Brock>brock;
 	//タイム管理
@@ -72,7 +73,7 @@ void Main() {
 	const Audio gameplay(U"GameData/gameplay.mp3");
 	const Audio bomb(U"GameData/bomb.mp3");
 	while (System::Update()) {
-
+		space.draw();
 		//start画面
 		if (now_situation == 0) {
 			//順位表を取得
@@ -95,15 +96,15 @@ void Main() {
 
 			//表示
 			font_120_italy(U"Space Run2").drawAt(600, 120, Palette::Deepskyblue);
-			Rect(180, 270, 360, 60).shearedX(120).draw(Palette::Turquoise);
-			Rect(180, 360, 360, 60).shearedX(120).draw(Palette::Turquoise);
-			Rect(180, 450, 360, 60).shearedX(120).draw(Palette::Turquoise);
-			font_35_italy(U"チュートリアル").drawAt(360, 300);
-			font_35_italy(U"プレイ").drawAt(360, 390);
-			font_35_italy(U"作者").drawAt(360, 480);
-			font_25_italy(U"...はじめてプレイする方向け").draw(750, 270);
-			font_25_italy(U"...ゲームをプレイ").draw(750, 360);
-			font_25_italy(U"...このゲームを作った人").draw(750, 450);
+			Rect(420, 270, 360, 60).shearedX(120).draw(Palette::Turquoise);
+			Rect(420, 360, 360, 60).shearedX(120).draw(Palette::Turquoise);
+			Rect(420, 450, 360, 60).shearedX(120).draw(Palette::Turquoise);
+			font_35_italy(U"チュートリアル").drawAt(600, 300);
+			font_35_italy(U"プレイ").drawAt(600, 390);
+			font_35_italy(U"作者").drawAt(600, 480);
+			//font_25_italy(U"...はじめてプレイする方向け").draw(750, 270);
+			//font_25_italy(U"...ゲームをプレイ").draw(750, 360);
+			//font_25_italy(U"...このゲームを作った人").draw(750, 450);
 			font_25_italy(U"↑↓キーで選択、Enterキーで決定").drawAt(600, 570);
 			if (KeyDown.down()) {
 				next_situation = min(3, next_situation + 1);
@@ -113,7 +114,7 @@ void Main() {
 				next_situation = max(1, next_situation - 1);
 				sys.play();
 			}
-			Rect(180, 180 + next_situation * 90, 360, 60).shearedX(120).drawFrame(7, Palette::Yellow);
+			Rect(420, 180 + next_situation * 90, 360, 60).shearedX(120).drawFrame(7, Palette::Yellow);
 			if (KeyEnter.down()) {
 				now_situation = next_situation;
 				next_situation = 1;
@@ -291,15 +292,23 @@ void Main() {
 			if (System::FrameCount() % (120 / (difficulty + 1)) == 0) {
 				double start_x = rand() % 2000 - 400, end_x = rand() % 1200;
 				double degree = 90 - ToDegrees(atan2(500, end_x - start_x));
-				brock.push_back({ start_x,0.,degree,gaming_time.s() / 20 * difficulty * 0.75 + 2 * (difficulty + 1) * 0.75,gaming_time.s() / 10 * difficulty * 0.75 + 5,Random(0,125),Random(0,125),Random(0,125),10000 });
+				brock.push_back({ start_x,0.,degree,gaming_time.s() / 20 * difficulty * 0.75 + 2 * (difficulty + 1) * 0.75,gaming_time.s() / 10 * difficulty * 0.75 + 5,Random(0,255),Random(0,255),Random(0,255),10000 });
 			}
 			else if (System::FrameCount() % (120 / (difficulty + 1)) == 120 / (difficulty + 1) / 2) {
 				double start_x = rand() % 2000 - 400, end_x = rocket.x + Random(-300, 300);
 				double degree = 90 - ToDegrees(atan2(rocket.y, end_x - start_x));
-				brock.push_back({ start_x,0.,degree,gaming_time.s() / 20 * difficulty * 0.75 + 2 * (difficulty + 1) * 0.75,gaming_time.s() / 10 * difficulty * 0.75 + 5,Random(0,125),Random(0,125),Random(0,125),10000 });
+				brock.push_back({ start_x,0.,degree,gaming_time.s() / 20 * difficulty * 0.75 + 2 * (difficulty + 1) * 0.75,gaming_time.s() / 10 * difficulty * 0.75 + 5,Random(0,255),Random(0,255),Random(0,255),10000 });
 			}
 			//ブロックの当たり判定
 			for (auto& p : brock) {
+				if (abs(p.color_red - p.color_blue) <= 50) {
+					if (p.color_blue >= 80)p.color_red = p.color_blue - 80;
+					else p.color_red = p.color_blue + 80;
+				}
+				if (abs(p.color_green - p.color_blue) <= 50) {
+					if (p.color_blue >= 80)p.color_green = p.color_blue - 80;
+					else p.color_green = p.color_blue + 80;
+				}
 				Circle brock_p(p.x, p.y, p.size);
 				//ロケットの当たり判定
 				if (rocket_upper.rotatedAt(rocket.x, rocket.y, ToRadians(rocket.degree)).intersects(brock_p) || rocket_lower.rotatedAt(rocket.x, rocket.y, ToRadians(rocket.degree)).intersects(brock_p)) {
@@ -307,7 +316,7 @@ void Main() {
 					red_brock = gaming_time.s() + 1;
 					p = brock.back();
 					brock.pop_back();
-					bomb.play();
+					bomb.stop(); bomb.play();
 					continue;
 				}
 				else if (gaming_time.s() > red_brock) {
