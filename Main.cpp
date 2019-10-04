@@ -1,4 +1,4 @@
-﻿#include <Siv3D.hpp> // OpenSiv3D v0.3.1
+﻿#include <Siv3D.hpp> // OpenSiv3D v0.4.1
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -85,7 +85,7 @@ void Main() {
 					getline(fin, sc);
 					if (sc == "")break;
 					int newsc = stoi(sc);
-					scores[newsc / 1000000].push_back(newsc % 1000000);
+					scores[newsc / 10000000].push_back(newsc % 10000000);
 				}
 				fin.close();
 				get_scores = true;
@@ -95,7 +95,10 @@ void Main() {
 			}
 
 			//表示
-			font_120_italy(U"Space Run2").drawAt(600, 120, Palette::Deepskyblue);
+			String title = U"SpaceRun2";
+			for (int i = 0; i < title.size(); i++) {
+				font_120_italy(title[i]).draw(280 + i * 70, 60, HSV(i * 36));
+			}
 			Rect(420, 270, 360, 60).shearedX(120).draw(Palette::Turquoise);
 			Rect(420, 360, 360, 60).shearedX(120).draw(Palette::Turquoise);
 			Rect(420, 450, 360, 60).shearedX(120).draw(Palette::Turquoise);
@@ -105,7 +108,7 @@ void Main() {
 			//font_25_italy(U"...はじめてプレイする方向け").draw(750, 270);
 			//font_25_italy(U"...ゲームをプレイ").draw(750, 360);
 			//font_25_italy(U"...このゲームを作った人").draw(750, 450);
-			font_25_italy(U"↑↓キーで選択、Enterキーで決定").drawAt(600, 570);
+			if (Scene::FrameCount() % 60 < 30)font_25_italy(U"↑↓キーで選択、Enterキーで決定").drawAt(600, 570);
 			if (KeyDown.down()) {
 				next_situation = min(3, next_situation + 1);
 				sys.play();
@@ -132,17 +135,17 @@ void Main() {
 			font_25_italy(U"操作方法：マウスを動かしてロケットを動かす").drawAt(600, 300);
 			font_25_italy(U"ロケットはカーソルのある方向に飛んでいきます。").drawAt(600, 340);
 			font_25_italy(U"練習してみましょう！").drawAt(600, 375);
-			font_25_italy(U"Enterキーでホーム画面に戻る").drawAt(600, 570);
+			if (Scene::FrameCount() % 60 < 30)font_25_italy(U"Enterキーでホーム画面に戻る").drawAt(600, 570);
 			//ロケットの描画
 			rocket_texture.scaled(0.5 * 0.75).rotatedAt(rocket_texture.width() / 4 * 0.75, rocket_texture.height() / 4 * 0.75, ToRadians(rocket.degree)).drawAt(rocket.x, rocket.y);
 
 			//ロケットの移動
 
 			if (abs(rocket.x - Cursor::Pos().x) <= 15 && abs(rocket.y - Cursor::Pos().y) <= 15)goto loop;
-			rocket.x += cos(ToRadians(90 - rocket.degree)) * System::DeltaTime() * 600 * 0.75;
+			rocket.x += cos(ToRadians(90 - rocket.degree)) * Scene::DeltaTime() * 600 * 0.75;
 			rocket.x = max(rocket.x, 100.);
 			rocket.x = min(rocket.x, 1100.);
-			rocket.y -= sin(ToRadians(90 - rocket.degree)) * System::DeltaTime() * 600 * 0.75;
+			rocket.y -= sin(ToRadians(90 - rocket.degree)) * Scene::DeltaTime() * 600 * 0.75;
 			rocket.y = max(rocket.y, 100.);
 			rocket.y = min(rocket.y, 500.);
 		loop:;
@@ -179,7 +182,7 @@ void Main() {
 			else font_25_italy(U"HighScore: -").draw(1000 * 0.75, 560 * 0.75);
 			if (scores[5].size())font_25_italy(U"HighScore: ", scores[5][0]).draw(1000 * 0.75, 640 * 0.75);
 			else font_25_italy(U"HighScore: -").draw(1000 * 0.75, 640 * 0.75);
-			font_25_italy(U"数字キーを使って選ぶこともできます。").drawAt(800 * 0.75, 760 * 0.75);
+			if (Scene::FrameCount() % 60 < 30)font_25_italy(U"数字キーを使って選ぶこともできます。").drawAt(800 * 0.75, 760 * 0.75);
 
 			//選択
 			if (KeyDown.down()) {
@@ -221,7 +224,7 @@ void Main() {
 			if (twitter_click.leftClicked()) {
 				System::LaunchBrowser(U"https://twitter.com/define_AC");
 			}
-			font_25_italy(U"Enterキーでホーム画面に戻る").drawAt(800 * 0.75, 750 * 0.75);
+			if (Scene::FrameCount() % 60 < 30)font_25_italy(U"Enterキーでホーム画面に戻る").drawAt(800 * 0.75, 750 * 0.75);
 			if (KeyEnter.down()) {
 				now_situation = 0;
 				author.stop();
@@ -256,18 +259,15 @@ void Main() {
 					font_25_italy(U"途中でクリックすると一時停止します").drawAt(800 * 0.75, 500 * 0.75);
 				}
 				//スコアの表示
-				font_25_italy(U"タイム").draw(100 * 0.75, 150 * 0.75);
-				font_25_italy(gaming_time.s()).draw(100 * 0.75, 200 * 0.75);
-				font_25_italy(U"HP").draw(100 * 0.75, 250 * 0.75);
-				font_25_italy(game_hp).draw(100 * 0.75, 300 * 0.75);
-				font_25_italy(U"スコア").draw(100 * 0.75, 350 * 0.75);
-				font_25_italy(near_score).draw(100 * 0.75, 400 * 0.75);
-				font_25_italy(U"難易度").draw(100 * 0.75, 450 * 0.75);
-				font_25_italy(difficulty).draw(100 * 0.75, 500 * 0.75);
+				Circle(40, 40, 40).drawPie(0, ToRadians(gaming_time.s() * 6), Palette::Yellow);
+				font_25_italy(gaming_time.s()).drawAt(40, 40, Palette::Yellow);
+				font_25_italy(U"Score:").draw(10, 110, Palette::Lightyellow);
+				font_25_italy(near_score).draw(10, 135, Palette::Springgreen);
 				//HPバー
-				Rect(10 * 0.75, 740 * 0.75, 1590 * 0.75, 50 * 0.75).draw(Palette::Black);
-				Rect(10 * 0.75, 740 * 0.75, 1590 * game_hp / 100 * 0.75, 50 * 0.75).draw(Palette::Red);
-				Rect(10 * 0.75, 740 * 0.75, 1590 * 0.75, 50 * 0.75).drawFrame(10 * 0.75, 0);
+				Rect(10, 180, 40, 400).drawFrame(0, 5, Palette::Yellowgreen);
+				for (int i = 180 + (100 - game_hp) * 4; i < 580; i += 4) {
+					if (game_hp)Rect(10, i, 40, 5).draw(HSV((i - 180) / (400. / 360.)));
+				}
 				continue;
 			}
 			else if (MouseL.down()) {
@@ -279,22 +279,22 @@ void Main() {
 			//ロケットの移動
 
 			if (abs(rocket.x - Cursor::Pos().x) <= 50 && abs(rocket.y - Cursor::Pos().y) <= 50)goto loop3;
-			rocket.x += cos(ToRadians(90 - rocket.degree)) * System::DeltaTime() * 60 * 4 * max(3, difficulty) * 0.75;
+			rocket.x += cos(ToRadians(90 - rocket.degree)) * Scene::DeltaTime() * 60 * 4 * max(3, difficulty) * 0.75;
 			rocket.x = max(rocket.x, 100.);
 			rocket.x = min(rocket.x, 1100.);
-			rocket.y -= sin(ToRadians(90 - rocket.degree)) * System::DeltaTime() * 60 * 4 * max(3, difficulty) * 0.75;
+			rocket.y -= sin(ToRadians(90 - rocket.degree)) * Scene::DeltaTime() * 60 * 4 * max(3, difficulty) * 0.75;
 			rocket.y = max(rocket.y, 100.);
-			rocket.y = min(rocket.y, 500.);
+			rocket.y = min(rocket.y, 550.);
 		loop3:;
 			rocket.degree = 90 - ToDegrees(atan2(rocket.y - Cursor::Pos().y, Cursor::Pos().x - rocket.x));
 
 			//ブロックの追加
-			if (System::FrameCount() % (120 / (difficulty + 1)) == 0) {
+			if (Scene::FrameCount() % (120 / (difficulty + 1)) == 0) {
 				double start_x = rand() % 2000 - 400, end_x = rand() % 1200;
 				double degree = 90 - ToDegrees(atan2(500, end_x - start_x));
 				brock.push_back({ start_x,0.,degree,gaming_time.s() / 20 * difficulty * 0.75 + 2 * (difficulty + 1) * 0.75,gaming_time.s() / 10 * difficulty * 0.75 + 5,Random(0,360),10000 });
 			}
-			else if (System::FrameCount() % (120 / (difficulty + 1)) == 120 / (difficulty + 1) / 2) {
+			else if (Scene::FrameCount() % (120 / (difficulty + 1)) == 120 / (difficulty + 1) / 2) {
 				double start_x = rand() % 2000 - 400, end_x = rocket.x + Random(-300, 300);
 				double degree = 90 - ToDegrees(atan2(rocket.y, end_x - start_x));
 				brock.push_back({ start_x,0.,degree,gaming_time.s() / 20 * difficulty * 0.75 + 2 * (difficulty + 1) * 0.75,gaming_time.s() / 10 * difficulty * 0.75 + 5,Random(0,360),10000 });
@@ -318,7 +318,7 @@ void Main() {
 				//範囲判定
 				if (p.y > 600.) {
 					if (p.near) {
-						near_score += 75 / max(1, p.near - 75);
+						near_score += (200 / max(1, p.near)) * (200 / max(1, p.near));
 					}
 					p = brock.back();
 					brock.pop_back();
@@ -327,25 +327,22 @@ void Main() {
 				if (gaming_time.s() > red_brock)brock_p.draw(HSV(p.H));
 				else brock_p.draw(Palette::Red);
 				//ブロックの移動
-				p.x += cos(ToRadians(90 - p.degree)) * System::DeltaTime() * p.speed * 60;
-				p.y += sin(ToRadians(90 - p.degree)) * System::DeltaTime() * p.speed * 60;
+				p.x += cos(ToRadians(90 - p.degree)) * Scene::DeltaTime() * p.speed * 60;
+				p.y += sin(ToRadians(90 - p.degree)) * Scene::DeltaTime() * p.speed * 60;
 			}
 			//HPの回復
-			if (System::FrameCount() % 300 == 0)game_hp = min(game_hp + 1, 100);
+			if (Scene::FrameCount() % 180 == 0)game_hp = min(game_hp + 1, 100);
 
 			//スコアの表示
-			font_25_italy(U"タイム").draw(100 * 0.75, 150 * 0.75);
-			font_25_italy(gaming_time.s()).draw(100 * 0.75, 200 * 0.75);
-			font_25_italy(U"HP").draw(100 * 0.75, 250 * 0.75);
-			font_25_italy(game_hp).draw(100 * 0.75, 300 * 0.75);
-			font_25_italy(U"スコア").draw(100 * 0.75, 350 * 0.75);
-			font_25_italy(near_score).draw(100 * 0.75, 400 * 0.75);
-			font_25_italy(U"難易度").draw(100 * 0.75, 450 * 0.75);
-			font_25_italy(difficulty).draw(100 * 0.75, 500 * 0.75);
+			Circle(40, 40, 40).drawPie(0, ToRadians(gaming_time.s() * 6), Palette::Red);
+			font_25_italy(gaming_time.s()).drawAt(40, 40, Palette::Yellow);
+			font_25_italy(U"Score:").draw(10, 110, Palette::Lightyellow);
+			font_25_italy(near_score).draw(10, 135, Palette::Springgreen);
 			//HPバー
-			Rect(10 * 0.75, 740 * 0.75, 1590 * 0.75, 50 * 0.75).draw(Palette::Black);
-			Rect(10 * 0.75, 740 * 0.75, 1590 * game_hp / 100 * 0.75, 50 * 0.75).draw(Palette::Red);
-			Rect(10 * 0.75, 740 * 0.75, 1590 * 0.75, 50 * 0.75).drawFrame(10 * 0.75, 0);
+			Rect(10, 180, 40, 400).drawFrame(0, 5, Palette::Yellowgreen);
+			for (int i = 180 + (100 - game_hp) * 4; i < 580; i += 4) {
+				if (game_hp)Rect(10, i, 40, 5).draw(HSV((i - 180) / (400. / 360.)));
+			}
 			//ゲーム終了
 			if (game_hp <= 0 || gaming_time.s() >= 60) {
 				now_situation = 5; gameplay.stop();
@@ -355,24 +352,38 @@ void Main() {
 			gaming_time.pause();
 			//スコア表示
 			font_75_italy(U"結果").drawAt(800 * 0.75, 160 * 0.75, Palette::Deepskyblue);
-			font_35_italy(U"   難易度：", difficulty, U"    タイム：", gaming_time.s(), U"秒", U"    スコア：", near_score).drawAt(800 * 0.75, 300 * 0.75);
+			font_35_italy(U"   レベル：", difficulty, U"    タイム：", gaming_time.s(), U"秒", U"    スコア：", near_score).drawAt(600, 200, Palette::Lightgreen);
 
 			//スコア書き込み
 			if (!write_scores) {
 				scores[difficulty].push_back(near_score);
 				sort(scores[difficulty].begin(), scores[difficulty].end(), greater<>());
 				fout.open("GameData/Scores.txt", ios::app);
-				fout << 1000000 * difficulty + near_score << endl;
+				fout << 10000000 * difficulty + near_score << endl;
 				fout.close();
 				write_scores = true;
 			}
 
 			//順位表
-			for (int i = 0; i < min((int)scores[difficulty].size(), 5); i++) {
-				font_35_italy(i + 1, U"位 ", scores[difficulty][i]).draw(700 * 0.75, 350 * 0.75 + 65 * i * 0.75, Palette::Yellow);
+			bool isused = false;
+			for (int i = 0; i < 50; i++) {
+				if (i < scores[difficulty].size()) {
+					if (scores[difficulty][i] == near_score && !isused) {
+						isused = true;
+						if (Scene::FrameCount() % 60 < 30) {
+							font_25_italy(i + 1, U"位   ", scores[difficulty][i]).draw(200 + i / 10 * 180, 250 + i % 10 * 28, HSV(i * 7.2));
+						}
+					}
+					else {
+						font_25_italy(i + 1, U"位   ", scores[difficulty][i]).draw(200 + i / 10 * 180, 250 + i % 10 * 28, HSV(i * 7.2));
+					}
+				}
+				else {
+					font_25_italy(i + 1, U"位   -").draw(200 + i / 10 * 180, 250 + i % 10 * 28, HSV(i * 7.2));
+				}
 			}
 
-			font_25_italy(U"Enterキーでホーム画面に戻る").drawAt(800 * 0.75, 750 * 0.75);
+			if (Scene::FrameCount() % 60 < 30)font_25_italy(U"Enterキーでホーム画面に戻る").drawAt(800 * 0.75, 570);
 			if (KeyEnter.down()) {
 				//初期化
 				now_situation = 0;
