@@ -301,7 +301,7 @@ void Main() {
 			}
 			//ブロックの当たり判定
 			for (int i = 0; i < brock.size(); i++) {
-				Brock &p = brock[i];
+				Brock& p = brock[i];
 				Circle brock_p(p.x, p.y, p.size);
 				//ロケットの当たり判定
 				if (rocket_upper.rotatedAt(rocket.x, rocket.y, ToRadians(rocket.degree)).intersects(brock_p) || rocket_lower.rotatedAt(rocket.x, rocket.y, ToRadians(rocket.degree)).intersects(brock_p)) {
@@ -376,15 +376,15 @@ void Main() {
 					if (scores[difficulty][i] == near_score && !isused) {
 						isused = true;
 						if (Scene::FrameCount() % 60 < 30) {
-							font_25_italy(i + 1, U"位   ", scores[difficulty][i]).draw(200 + i / 10 * 180, 250 + i % 10 * 28, HSV(i * 7.2));
+							font_25_italy(i + 1, U"位   ", scores[difficulty][i]).draw(200 + i / 10 * 180, 250 + i % 10 * 28, HSV(36 + i * 3.5));
 						}
 					}
 					else {
-						font_25_italy(i + 1, U"位   ", scores[difficulty][i]).draw(200 + i / 10 * 180, 250 + i % 10 * 28, HSV(i * 7.2));
+						font_25_italy(i + 1, U"位   ", scores[difficulty][i]).draw(200 + i / 10 * 180, 250 + i % 10 * 28, HSV(36 + i * 3.5));
 					}
 				}
 				else {
-					font_25_italy(i + 1, U"位   -").draw(200 + i / 10 * 180, 250 + i % 10 * 28, HSV(i * 7.2));
+					font_25_italy(i + 1, U"位   -").draw(200 + i / 10 * 180, 250 + i % 10 * 28, HSV(36 + i * 3.5));
 				}
 			}
 
