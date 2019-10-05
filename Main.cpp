@@ -40,6 +40,8 @@ void Main() {
 	Font font_35_italy(35, Typeface::Regular, FontStyle::Italic);
 	Font font_25_italy(25, Typeface::Regular, FontStyle::Italic);
 	Font font_15_italy(15, Typeface::Regular, FontStyle::Italic);
+
+	font_25_italy(U"Now Loading...").draw(1100, 500);
 	//テクスチャ
 	Texture rocket_texture(U"GameData/rocket.png", TextureDesc::Mipped);
 	Rocket rocket;
@@ -321,6 +323,9 @@ void Main() {
 					if (p.near) {
 						near_score += (200 / max(1, p.near)) * (200 / max(1, p.near));
 					}
+					else {
+						near_score += 100000;
+					}
 					brock[i] = brock.back(); brock.pop_back(); i--;
 					continue;
 				}
@@ -348,6 +353,9 @@ void Main() {
 				for (auto& p : brock) {
 					if (p.near) {
 						near_score += (200 / max(1, p.near)) * (200 / max(1, p.near));
+					}
+					else {
+						near_score += 100000;
 					}
 				}
 				now_situation = 5; gameplay.stop();
