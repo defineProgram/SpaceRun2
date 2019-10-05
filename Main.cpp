@@ -300,14 +300,15 @@ void Main() {
 				brock.push_back({ start_x,0.,degree,gaming_time.s() / 20 * difficulty * 0.75 + 2 * (difficulty + 1) * 0.75,gaming_time.s() / 10 * difficulty * 0.75 + 5,Random(0,360),10000 });
 			}
 			//ブロックの当たり判定
-			for (auto& p : brock) {
+			for (int i = 0; i < brock.size(); i++) {
+				Brock &p = brock[i];
 				Circle brock_p(p.x, p.y, p.size);
 				//ロケットの当たり判定
 				if (rocket_upper.rotatedAt(rocket.x, rocket.y, ToRadians(rocket.degree)).intersects(brock_p) || rocket_lower.rotatedAt(rocket.x, rocket.y, ToRadians(rocket.degree)).intersects(brock_p)) {
 					game_hp -= 5;
+					brock[i] = brock.back();
+					brock.pop_back(); i--;
 					red_brock = gaming_time.s() + 1;
-					p = brock.back();
-					brock.pop_back();
 					bomb.stop(); bomb.play();
 					continue;
 				}
@@ -320,8 +321,7 @@ void Main() {
 					if (p.near) {
 						near_score += (200 / max(1, p.near)) * (200 / max(1, p.near));
 					}
-					p = brock.back();
-					brock.pop_back();
+					brock[i] = brock.back(); brock.pop_back(); i--;
 					continue;
 				}
 				if (gaming_time.s() > red_brock)brock_p.draw(HSV(p.H));
