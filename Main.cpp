@@ -259,7 +259,7 @@ void Main() {
 					font_25_italy(U"途中でクリックすると一時停止します").drawAt(800 * 0.75, 500 * 0.75);
 				}
 				//スコアの表示
-				Circle(40, 40, 40).drawPie(0, ToRadians(gaming_time.s() * 6), Palette::Yellow);
+				Circle(40, 40, 40).drawPie(0, ToRadians(gaming_time.s() * 6), Palette::Red);
 				font_25_italy(gaming_time.s()).drawAt(40, 40, Palette::Yellow);
 				font_25_italy(U"Score:").draw(10, 110, Palette::Lightyellow);
 				font_25_italy(near_score).draw(10, 135, Palette::Springgreen);
@@ -345,6 +345,11 @@ void Main() {
 			}
 			//ゲーム終了
 			if (game_hp <= 0 || gaming_time.s() >= 60) {
+				for (auto& p : brock) {
+					if (p.near) {
+						near_score += (200 / max(1, p.near)) * (200 / max(1, p.near));
+					}
+				}
 				now_situation = 5; gameplay.stop();
 			}
 		}
