@@ -384,15 +384,15 @@ void Main() {
 					if (scores[difficulty][i] == near_score && !isused) {
 						isused = true;
 						if (Scene::FrameCount() % 60 < 30) {
-							font_25_italy(i + 1, U"位   ", scores[difficulty][i]).draw(200 + i / 10 * 180, 250 + i % 10 * 28, HSV(36 + i * 3.5));
+							font_25_italy(i + 1, U"位   ", scores[difficulty][i]).draw(100 + i / 10 * 220, 250 + i % 10 * 28, HSV(36 + i * 3.5));
 						}
 					}
 					else {
-						font_25_italy(i + 1, U"位   ", scores[difficulty][i]).draw(200 + i / 10 * 180, 250 + i % 10 * 28, HSV(36 + i * 3.5));
+						font_25_italy(i + 1, U"位   ", scores[difficulty][i]).draw(100 + i / 10 * 220, 250 + i % 10 * 28, HSV(36 + i * 3.5));
 					}
 				}
 				else {
-					font_25_italy(i + 1, U"位   -").draw(200 + i / 10 * 180, 250 + i % 10 * 28, HSV(36 + i * 3.5));
+					font_25_italy(i + 1, U"位   -").draw(100 + i / 10 * 220, 250 + i % 10 * 28, HSV(36 + i * 3.5));
 				}
 			}
 
