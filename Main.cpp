@@ -65,15 +65,15 @@ void Main() {
 	bool write_scores = false;
 
 	//音楽
-	const Audio opening(U"GameData/opening.mp3", Arg::loop = true);
-	const Audio kettei(U"GameData/kettei.mp3");
-	const Audio sys(U"GameData/sys.mp3");
-	const Audio tutorial(U"GameData/tutorial.mp3", Arg::loop = true);
-	const Audio cancel(U"GameData/cancel.mp3");
-	const Audio author(U"GameData/author.mp3", Arg::loop = true);
-	const Audio level(U"GameData/level.mp3", Arg::loop = true);
-	const Audio gameplay(U"GameData/gameplay.mp3");
-	const Audio bomb(U"GameData/bomb.mp3");
+	const Audio opening(U"GameData/opening.wav", Arg::loop = true);
+	const Audio kettei(U"GameData/kettei.wav");
+	const Audio sys(U"GameData/sys.wav");
+	const Audio tutorial(U"GameData/tutorial.wav", Arg::loop = true);
+	const Audio cancel(U"GameData/cancel.wav");
+	const Audio author(U"GameData/author.wav", Arg::loop = true);
+	const Audio level(U"GameData/level.wav", Arg::loop = true);
+	const Audio gameplay(U"GameData/gameplay.wav");
+	const Audio bomb(U"GameData/bomb.wav");
 	while (System::Update()) {
 		space.draw();
 		//start画面
@@ -321,10 +321,11 @@ void Main() {
 				//範囲判定
 				if (p.y > 600.) {
 					if (p.near) {
-						near_score += (200 / max(1, p.near)) * (200 / max(1, p.near));
+						near_score += gaming_time.s() * gaming_time.s() / 200;
+						near_score += (200 / max(1, p.near)) * gaming_time.s();
 					}
 					else {
-						near_score += 100000;
+						near_score += 300 * gaming_time.s();
 					}
 					brock[i] = brock.back(); brock.pop_back(); i--;
 					continue;
@@ -352,10 +353,10 @@ void Main() {
 			if (game_hp <= 0 || gaming_time.s() >= 60) {
 				for (auto& p : brock) {
 					if (p.near) {
-						near_score += (200 / max(1, p.near)) * (200 / max(1, p.near));
+						near_score += (200 / max(1, p.near)) * 60;
 					}
 					else {
-						near_score += 100000;
+						near_score += 300 * 60;
 					}
 				}
 				now_situation = 5; gameplay.stop();
