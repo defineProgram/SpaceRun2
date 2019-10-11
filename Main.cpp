@@ -127,17 +127,6 @@ void Main() {
 			font_25_italy(U"ロケットはカーソルのある方向に飛んでいきます。").drawAt(600, 340);
 			font_25_italy(U"練習してみましょう！").drawAt(600, 375);
 
-			Rect(420, 450, 360, 60).shearedX(120).draw(Palette::Blue);
-			font_35_italy(U"戻る").drawAt(600, 480);
-			if (Rect(420, 450, 360, 60).shearedX(120).mouseOver()) {
-				Rect(420, 450, 360, 60).shearedX(120).drawFrame(7, Palette::Yellow);
-				if (Rect(420, 450, 360, 60).shearedX(120).leftClicked()) {
-					now_situation = 0;
-					rocket.x = 600., rocket.y = 450, rocket.degree = 0.;
-					tutorial.stop();
-					cancel.play();
-				}
-			}
 
 			//ロケットの描画
 			rocket_texture.scaled(0.5 * 0.75).rotatedAt(rocket_texture.width() / 4 * 0.75, rocket_texture.height() / 4 * 0.75, ToRadians(rocket.degree)).drawAt(rocket.x, rocket.y);
@@ -154,6 +143,17 @@ void Main() {
 		loop:;
 			rocket.degree = 90 - ToDegrees(atan2(rocket.y - Cursor::Pos().y, Cursor::Pos().x - rocket.x));
 
+			Rect(420, 450, 360, 60).shearedX(120).draw(Palette::Blue);
+			font_35_italy(U"戻る").drawAt(600, 480);
+			if (Rect(420, 450, 360, 60).shearedX(120).mouseOver()) {
+				Rect(420, 450, 360, 60).shearedX(120).drawFrame(7, Palette::Yellow);
+				if (Rect(420, 450, 360, 60).shearedX(120).leftClicked()) {
+					now_situation = 0;
+					rocket.x = 600., rocket.y = 450, rocket.degree = 0.;
+					tutorial.stop();
+					cancel.play();
+				}
+			}
 		}
 		else if (now_situation == 2) {
 			level.play();
