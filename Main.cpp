@@ -29,7 +29,6 @@ void Main() {
 
 	//シチュエーション管理
 	int now_situation = 0;
-	int next_situation = 1;
 
 	//難易度管理
 	int difficulty = 1;
@@ -65,15 +64,14 @@ void Main() {
 	bool write_scores = false;
 
 	//音楽
-	const Audio opening(U"GameData/opening.wav", Arg::loop = true);
-	const Audio kettei(U"GameData/kettei.wav");
-	const Audio sys(U"GameData/sys.wav");
-	const Audio tutorial(U"GameData/tutorial.wav", Arg::loop = true);
-	const Audio cancel(U"GameData/cancel.wav");
-	const Audio author(U"GameData/author.wav", Arg::loop = true);
-	const Audio level(U"GameData/level.wav", Arg::loop = true);
-	const Audio gameplay(U"GameData/gameplay.wav");
-	const Audio bomb(U"GameData/bomb.wav");
+	const Audio opening(U"GameData/opening.mp3", Arg::loop = true);
+	const Audio kettei(U"GameData/kettei.mp3");
+	const Audio tutorial(U"GameData/tutorial.mp3", Arg::loop = true);
+	const Audio cancel(U"GameData/cancel.mp3");
+	const Audio author(U"GameData/author.mp3", Arg::loop = true);
+	const Audio level(U"GameData/level.mp3", Arg::loop = true);
+	const Audio gameplay(U"GameData/gameplay.mp3");
+	const Audio bomb(U"GameData/bomb.mp3");
 	while (System::Update()) {
 		space.draw();
 		//start画面
@@ -107,25 +105,16 @@ void Main() {
 			font_35_italy(U"チュートリアル").drawAt(600, 300);
 			font_35_italy(U"プレイ").drawAt(600, 390);
 			font_35_italy(U"作者").drawAt(600, 480);
-			//font_25_italy(U"...はじめてプレイする方向け").draw(750, 270);
-			//font_25_italy(U"...ゲームをプレイ").draw(750, 360);
-			//font_25_italy(U"...このゲームを作った人").draw(750, 450);
-			if (Scene::FrameCount() % 60 < 30)font_25_italy(U"↑↓キーで選択、Enterキーで決定").drawAt(600, 570);
-			if (KeyDown.down()) {
-				next_situation = min(3, next_situation + 1);
-				sys.play();
-			}
-			if (KeyUp.down()) {
-				next_situation = max(1, next_situation - 1);
-				sys.play();
-			}
-			Rect(420, 180 + next_situation * 90, 360, 60).shearedX(120).drawFrame(7, Palette::Yellow);
-			if (KeyEnter.down()) {
-				now_situation = next_situation;
-				next_situation = 1;
-				opening.stop();
-				kettei.play();
-				wait(500);
+
+			//マウス操作
+
+			for (int i = 1; i <= 3; i++) {
+				if (Rect(420, 180 + 90 * i, 360, 60).shearedX(120).mouseOver()) {
+					Rect(420, 180 + 90 * i, 360, 60).shearedX(120).drawFrame(7, Palette::Yellow);
+					if (Rect(420, 180 + 90 * i, 360, 60).shearedX(120).leftClicked()) {
+						now_situation = i; opening.stop(); kettei.play();
+					}
+				}
 			}
 		}
 		else if (now_situation == 1) {
@@ -137,7 +126,19 @@ void Main() {
 			font_25_italy(U"操作方法：マウスを動かしてロケットを動かす").drawAt(600, 300);
 			font_25_italy(U"ロケットはカーソルのある方向に飛んでいきます。").drawAt(600, 340);
 			font_25_italy(U"練習してみましょう！").drawAt(600, 375);
-			if (Scene::FrameCount() % 60 < 30)font_25_italy(U"Enterキーでホーム画面に戻る").drawAt(600, 570);
+
+			Rect(420, 450, 360, 60).shearedX(120).draw(Palette::Blue);
+			font_35_italy(U"戻る").drawAt(600, 480);
+			if (Rect(420, 450, 360, 60).shearedX(120).mouseOver()) {
+				Rect(420, 450, 360, 60).shearedX(120).drawFrame(7, Palette::Yellow);
+				if (Rect(420, 450, 360, 60).shearedX(120).leftClicked()) {
+					now_situation = 0;
+					rocket.x = 600., rocket.y = 450, rocket.degree = 0.;
+					tutorial.stop();
+					cancel.play();
+				}
+			}
+
 			//ロケットの描画
 			rocket_texture.scaled(0.5 * 0.75).rotatedAt(rocket_texture.width() / 4 * 0.75, rocket_texture.height() / 4 * 0.75, ToRadians(rocket.degree)).drawAt(rocket.x, rocket.y);
 
@@ -152,68 +153,40 @@ void Main() {
 			rocket.y = min(rocket.y, 500.);
 		loop:;
 			rocket.degree = 90 - ToDegrees(atan2(rocket.y - Cursor::Pos().y, Cursor::Pos().x - rocket.x));
-			if (KeyEnter.down()) {
-				now_situation = 0;
-				rocket.x = 600., rocket.y = 450, rocket.degree = 0.;
-				tutorial.stop();
-				cancel.play();
-				wait(500);
-			}
+
 		}
 		else if (now_situation == 2) {
 			level.play();
 			//文字・選択バーの描画
 			font_75_italy(U"難易度選択").drawAt(800 * 0.75, 160 * 0.75, Palette::Deepskyblue);
-			Rect(240 * 0.75, 320 * 0.75, 480 * 0.75, 40 * 0.75).shearedX(120).draw(Palette::Turquoise);
-			Rect(240 * 0.75, 400 * 0.75, 480 * 0.75, 40 * 0.75).shearedX(120).draw(Palette::Turquoise);
-			Rect(240 * 0.75, 480 * 0.75, 480 * 0.75, 40 * 0.75).shearedX(120).draw(Palette::Turquoise);
-			Rect(240 * 0.75, 560 * 0.75, 480 * 0.75, 40 * 0.75).shearedX(120).draw(Palette::Turquoise);
-			Rect(240 * 0.75, 640 * 0.75, 480 * 0.75, 40 * 0.75).shearedX(120).draw(Palette::Turquoise);
-			font_25_italy(U"レベル１").drawAt(480 * 0.75, 340 * 0.75);
-			font_25_italy(U"レベル２").drawAt(480 * 0.75, 420 * 0.75);
-			font_25_italy(U"レベル３").drawAt(480 * 0.75, 500 * 0.75);
-			font_25_italy(U"レベル４").drawAt(480 * 0.75, 580 * 0.75);
-			font_25_italy(U"レベル５").drawAt(480 * 0.75, 660 * 0.75);
-			if (scores[1].size())font_25_italy(U"HighScore: ", scores[1][0]).draw(1000 * 0.75, 320 * 0.75);
-			else font_25_italy(U"HighScore: -").draw(1000 * 0.75, 320 * 0.75);
-			if (scores[2].size())font_25_italy(U"HighScore: ", scores[2][0]).draw(1000 * 0.75, 400 * 0.75);
-			else font_25_italy(U"HighScore: -").draw(1000 * 0.75, 400 * 0.75);
-			if (scores[3].size())font_25_italy(U"HighScore: ", scores[3][0]).draw(1000 * 0.75, 480 * 0.75);
-			else font_25_italy(U"HighScore: -").draw(1000 * 0.75, 480 * 0.75);
-			if (scores[4].size())font_25_italy(U"HighScore: ", scores[4][0]).draw(1000 * 0.75, 560 * 0.75);
-			else font_25_italy(U"HighScore: -").draw(1000 * 0.75, 560 * 0.75);
-			if (scores[5].size())font_25_italy(U"HighScore: ", scores[5][0]).draw(1000 * 0.75, 640 * 0.75);
-			else font_25_italy(U"HighScore: -").draw(1000 * 0.75, 640 * 0.75);
-			if (Scene::FrameCount() % 60 < 30)font_25_italy(U"数字キーを使って選ぶこともできます。").drawAt(800 * 0.75, 760 * 0.75);
 
-			//選択
-			if (KeyDown.down()) {
-				difficulty = min(5, difficulty + 1);
-				sys.play();
+			for (int i = 1; i <= 5; i++) {
+				Rect(180, 180 + 60 * i, 360, 30).shearedX(120).draw(Palette::Turquoise);
+				font_25_italy(U"レベル", i).draw(320, 175 + i * 60);
+				if (scores[i].size()) {
+					font_25_italy(U"Highest Score:", scores[i][0]).draw(750, 180 + i * 60);
+				}
+				else {
+					font_25_italy(U"Highest Score: -").draw(750, 180 + i * 60);
+				}
+				if (Rect(180, 180 + 60 * i, 360, 30).shearedX(120).mouseOver()) {
+					Rect(180, 180 + i * 60, 360, 30).shearedX(120).drawFrame(10 * 0.75, Palette::Yellow);
+				}
+				if (Rect(180, 180 + 60 * i, 360, 30).shearedX(120).leftClicked()) {
+					now_situation = 4; difficulty = i; kettei.play(); level.stop();
+				}
 			}
-			if (KeyUp.down()) {
-				difficulty = max(1, difficulty - 1);
-				sys.play();
+
+
+			Rect(420, 550, 360, 40).shearedX(120).draw(Palette::Blue);
+			font_35_italy(U"戻る").drawAt(600, 570);
+			if (Rect(420, 550, 360, 40).shearedX(120).mouseOver()) {
+				Rect(420, 550, 360, 40).shearedX(120).drawFrame(7, Palette::Yellow);
 			}
-			Rect(240 * 0.75, 240 * 0.75 + difficulty * 80 * 0.75, 480 * 0.75, 40 * 0.75).shearedX(120).drawFrame(10 * 0.75, Palette::Yellow);
-			if (KeyEnter.down()) {
-				now_situation = 4; kettei.play(); level.stop();
-			}
-			//コマンド
-			if ((Key1 | KeyNum1).down()) {
-				difficulty = 1; sys.play();
-			}
-			if ((Key2 | KeyNum2).down()) {
-				difficulty = 2; sys.play();
-			}
-			if ((Key3 | KeyNum3).down()) {
-				difficulty = 3; sys.play();
-			}
-			if ((Key4 | KeyNum4).down()) {
-				difficulty = 4; sys.play();
-			}
-			if ((Key5 | KeyNum5).down()) {
-				difficulty = 5; sys.play();
+			if (Rect(420, 550, 360, 40).shearedX(120).leftClicked()) {
+				now_situation = 0;
+				level.stop();
+				cancel.play();
 			}
 		}
 		else if (now_situation == 3) {
@@ -226,17 +199,19 @@ void Main() {
 			if (twitter_click.leftClicked()) {
 				System::LaunchBrowser(U"https://twitter.com/define_AC");
 			}
-			if (Scene::FrameCount() % 60 < 30)font_25_italy(U"Enterキーでホーム画面に戻る").drawAt(800 * 0.75, 750 * 0.75);
-			if (KeyEnter.down()) {
+			if (Rect(420, 450, 360, 60).shearedX(120).leftClicked()) {
 				now_situation = 0;
 				author.stop();
 				cancel.play();
 			}
+
+			Rect(420, 450, 360, 60).shearedX(120).draw(Palette::Blue);
+			font_35_italy(U"戻る").drawAt(600, 480);
+			if (Rect(420, 450, 360, 60).shearedX(120).mouseOver()) {
+				Rect(420, 450, 360, 60).shearedX(120).drawFrame(7, Palette::Yellow);
+			}
 		}
 		else if (now_situation == 4) {
-			//デバッグ用コマンド
-			//if (KeyE.down())now_situation = 5;
-
 			Triangle rocket_upper(rocket.x, rocket.y - 54 * 0.75, rocket.x + 12 * 0.75, rocket.y + 16 * 0.75, rocket.x - 12 * 0.75, rocket.y + 16 * 0.75);
 			Rect rocket_lower(rocket.x - 22 * 0.75, rocket.y + 16 * 0.75, 44 * 0.75, 39 * 0.75);
 			//ロケットの描画
@@ -325,7 +300,7 @@ void Main() {
 						near_score += (200 / max(1, p.near)) * gaming_time.s();
 					}
 					else {
-						near_score += 300 * gaming_time.s();
+						near_score += 300;
 					}
 					brock[i] = brock.back(); brock.pop_back(); i--;
 					continue;
@@ -353,10 +328,10 @@ void Main() {
 			if (game_hp <= 0 || gaming_time.s() >= 60) {
 				for (auto& p : brock) {
 					if (p.near) {
-						near_score += (200 / max(1, p.near)) * 60;
+						near_score += (200 / max(1, p.near));
 					}
 					else {
-						near_score += 300 * 60;
+						near_score += 300;
 					}
 				}
 				now_situation = 5; gameplay.stop();
@@ -397,14 +372,18 @@ void Main() {
 				}
 			}
 
-			if (Scene::FrameCount() % 60 < 30)font_25_italy(U"Enterキーでホーム画面に戻る").drawAt(800 * 0.75, 570);
-			if (KeyEnter.down()) {
+
+			Rect(420, 550, 360, 40).shearedX(120).draw(Palette::Blue);
+			font_35_italy(U"戻る").drawAt(600, 570);
+			if (Rect(420, 550, 360, 40).shearedX(120).mouseOver()) {
+				Rect(420, 550, 360, 40).shearedX(120).drawFrame(7, Palette::Yellow);
+			}
+
+			if (Rect(420, 550, 360, 40).shearedX(120).leftClicked()) {
 				//初期化
 				now_situation = 0;
-				next_situation = 1;
 				near_score = 0;
 				game_hp = 100;
-				difficulty = 1;
 				brock.clear();
 				red_brock = -1;
 				rocket.x = 600., rocket.y = 450, rocket.degree = 0.;
