@@ -355,21 +355,24 @@ void Main() {
 
 			//順位表
 			bool isused = false;
+			int rank = 0;
 			for (int i = 0; i < 50; i++) {
 				if (i < scores[difficulty].size()) {
 					if (scores[difficulty][i] == near_score && !isused) {
 						isused = true;
 						if (Scene::FrameCount() % 60 < 30) {
-							font_25_italy(i + 1, U"位   ", scores[difficulty][i]).draw(100 + i / 10 * 220, 250 + i % 10 * 28, HSV(36 + i * 3.5));
+							font_25_italy(rank + 1, U"位   ", scores[difficulty][i]).draw(100 + i / 10 * 220, 250 + i % 10 * 28, HSV(36 + i * 3.5));
 						}
 					}
 					else {
-						font_25_italy(i + 1, U"位   ", scores[difficulty][i]).draw(100 + i / 10 * 220, 250 + i % 10 * 28, HSV(36 + i * 3.5));
+						font_25_italy(rank + 1, U"位   ", scores[difficulty][i]).draw(100 + i / 10 * 220, 250 + i % 10 * 28, HSV(36 + i * 3.5));
 					}
 				}
 				else {
-					font_25_italy(i + 1, U"位   -").draw(100 + i / 10 * 220, 250 + i % 10 * 28, HSV(36 + i * 3.5));
+					font_25_italy(rank + 1, U"位   -").draw(100 + i / 10 * 220, 250 + i % 10 * 28, HSV(36 + i * 3.5));
 				}
+				if (i < scores[difficulty].size() - 1 && scores[difficulty][i] != scores[difficulty][i + 1])rank = i + 1;
+				if (i == scores[difficulty].size() - 1)rank = i + 1;
 			}
 
 
