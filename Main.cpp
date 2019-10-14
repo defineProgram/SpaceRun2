@@ -63,14 +63,14 @@ void Main() {
 	bool write_scores = false;
 
 	//音楽
-	const Audio opening(U"GameData/opening.mp3", Arg::loop = true);
-	const Audio kettei(U"GameData/kettei.mp3");
-	const Audio tutorial(U"GameData/tutorial.mp3", Arg::loop = true);
-	const Audio cancel(U"GameData/cancel.mp3");
-	const Audio author(U"GameData/author.mp3", Arg::loop = true);
-	const Audio level(U"GameData/level.mp3", Arg::loop = true);
-	const Audio gameplay(U"GameData/gameplay.mp3");
-	const Audio bomb(U"GameData/bomb.mp3");
+	AudioAsset::Register(U"opening", U"GameData/opening.mp3", AssetParameter::LoadAsync());
+	AudioAsset::Register(U"kettei", U"GameData/kettei.mp3", AssetParameter::LoadAsync());
+	AudioAsset::Register(U"tutorial", U"GameData/tutorial.mp3", AssetParameter::LoadAsync());
+	AudioAsset::Register(U"cancel", U"GameData/cancel.mp3", AssetParameter::LoadAsync());
+	AudioAsset::Register(U"author", U"GameData/author.mp3", AssetParameter::LoadAsync());
+	AudioAsset::Register(U"level", U"GameData/level.mp3", AssetParameter::LoadAsync());
+	AudioAsset::Register(U"gameplay", U"GameData/gameplay.mp3", AssetParameter::LoadAsync());
+	AudioAsset::Register(U"bomb", U"GameData/bomb.mp3", AssetParameter::LoadAsync());
 
 	Window::SetTitle(U"Space Run2");
 	while (System::Update()) {
@@ -78,7 +78,7 @@ void Main() {
 		//start画面
 		if (now_situation == 0) {
 			//順位表を取得
-			opening.play();
+			AudioAsset(U"opening").play();
 			if (!get_scores) {
 				fin.open("GameData/Scores.txt", ios::in);
 				while (!fin.eof()) {
@@ -113,13 +113,13 @@ void Main() {
 				if (Rect(420, 180 + 90 * i, 360, 60).shearedX(120).mouseOver()) {
 					Rect(420, 180 + 90 * i, 360, 60).shearedX(120).drawFrame(7, Palette::Yellow);
 					if (Rect(420, 180 + 90 * i, 360, 60).shearedX(120).leftClicked()) {
-						now_situation = i; opening.stop(); kettei.play();
+						now_situation = i; AudioAsset(U"opening").stop(); AudioAsset(U"kettei").play();
 					}
 				}
 			}
 		}
 		else if (now_situation == 1) {
-			tutorial.play();
+			AudioAsset(U"tutorial").play();
 			//文字の描画
 			font_75_italy(U"チュートリアル").drawAt(600, 120, Palette::Deepskyblue);
 			font_25_italy(U"降ってくるカラフルな隕石を避けましょう！").drawAt(600, 225);
@@ -151,13 +151,13 @@ void Main() {
 				if (Rect(420, 450, 360, 60).shearedX(120).leftClicked()) {
 					now_situation = 0;
 					rocket.x = 600., rocket.y = 450, rocket.degree = 0.;
-					tutorial.stop();
-					cancel.play();
+					AudioAsset(U"tutorial").stop();
+					AudioAsset(U"cancel").play();
 				}
 			}
 		}
 		else if (now_situation == 2) {
-			level.play();
+			AudioAsset(U"level").play();
 			//文字・選択バーの描画
 			font_75_italy(U"難易度選択").drawAt(800 * 0.75, 160 * 0.75, Palette::Deepskyblue);
 
@@ -174,7 +174,7 @@ void Main() {
 					Rect(180, 180 + i * 60, 360, 30).shearedX(120).drawFrame(10 * 0.75, Palette::Yellow);
 				}
 				if (Rect(180, 180 + 60 * i, 360, 30).shearedX(120).leftClicked()) {
-					now_situation = 4; difficulty = i; kettei.play(); level.stop();
+					now_situation = 4; difficulty = i; AudioAsset(U"level").stop(); AudioAsset(U"kettei").play();
 				}
 			}
 
@@ -186,12 +186,12 @@ void Main() {
 			}
 			if (Rect(420, 550, 360, 40).shearedX(120).leftClicked()) {
 				now_situation = 0;
-				level.stop();
-				cancel.play();
+				AudioAsset(U"level").stop();
+				AudioAsset(U"kettei").play();
 			}
 		}
 		else if (now_situation == 3) {
-			author.play();
+		AudioAsset(U"author").play();
 			font_75_italy(U"作者").drawAt(600, 120, Palette::Deepskyblue);
 			font_35_italy(U"原案・デザイン・プログラム：define").drawAt(600, 300);
 			Rect twitter_click(800 * 0.75 - twitter_rink.width() / 8 * 0.75, 450 * 0.75, twitter_rink.width() / 4 * 0.75, twitter_rink.height() / 4 * 0.75);
@@ -202,8 +202,8 @@ void Main() {
 			}
 			if (Rect(420, 450, 360, 60).shearedX(120).leftClicked()) {
 				now_situation = 0;
-				author.stop();
-				cancel.play();
+				AudioAsset(U"author").stop();
+				AudioAsset(U"cancel").play();
 			}
 
 			Rect(420, 450, 360, 60).shearedX(120).draw(Palette::Blue);
@@ -223,7 +223,7 @@ void Main() {
 				if (MouseL.down()) {
 					gaming_time.start();
 					game_stop++;
-					gameplay.play();
+					AudioAsset(U"gameplay").play();
 					continue;
 				}
 				for (auto& p : brock) {
@@ -251,7 +251,7 @@ void Main() {
 			else if (MouseL.down()) {
 				game_stop++;
 				gaming_time.pause();
-				gameplay.pause();
+				AudioAsset(U"gameplay").pause();
 				continue;
 			}
 			//ロケットの移動
@@ -287,7 +287,7 @@ void Main() {
 					brock[i] = brock.back();
 					brock.pop_back(); i--;
 					red_brock = gaming_time.s() + 1;
-					bomb.stop(); bomb.play();
+					AudioAsset(U"bomb").stop(); AudioAsset(U"bomb").play();
 					continue;
 				}
 				else if (gaming_time.s() > red_brock) {
@@ -335,7 +335,7 @@ void Main() {
 						near_score += 300;
 					}
 				}
-				now_situation = 5; gameplay.stop();
+				now_situation = 5; AudioAsset(U"gameplay").stop();
 			}
 		}
 		else if (now_situation == 5) {
@@ -396,7 +396,7 @@ void Main() {
 				get_scores = false;
 				write_scores = false;
 				for (int i = 0; i < 10; i++)scores[i].clear();
-				kettei.play();
+				AudioAsset(U"kettei").play();
 			}
 		}
 	}
