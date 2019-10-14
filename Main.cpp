@@ -24,7 +24,7 @@ void wait(int ms) {
 void Main() {
 	srand((unsigned)(time(NULL)));
 	Window::Resize(1200, 600);
-	Window::SetTitle(U"Space Run2");
+	Window::SetTitle(U"Now Loading...");
 	Window::Centering();
 
 	//シチュエーション管理
@@ -40,7 +40,6 @@ void Main() {
 	Font font_25_italy(25, Typeface::Regular, FontStyle::Italic);
 	Font font_15_italy(15, Typeface::Regular, FontStyle::Italic);
 
-	font_25_italy(U"Now Loading...").draw(1100, 500);
 	//テクスチャ
 	Texture rocket_texture(U"GameData/rocket.png", TextureDesc::Mipped);
 	Rocket rocket;
@@ -72,6 +71,8 @@ void Main() {
 	const Audio level(U"GameData/level.mp3", Arg::loop = true);
 	const Audio gameplay(U"GameData/gameplay.mp3");
 	const Audio bomb(U"GameData/bomb.mp3");
+
+	Window::SetTitle(U"Space Run2");
 	while (System::Update()) {
 		space.draw();
 		//start画面
