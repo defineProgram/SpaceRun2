@@ -103,7 +103,7 @@ void Main() {
 			Rect(420, 270, 360, 60).shearedX(120).draw(Palette::Turquoise);
 			Rect(420, 360, 360, 60).shearedX(120).draw(Palette::Turquoise);
 			Rect(420, 450, 360, 60).shearedX(120).draw(Palette::Turquoise);
-			font_35_italy(U"チュートリアル").drawAt(600, 300);
+			font_35_italy(U"遊び方").drawAt(600, 300);
 			font_35_italy(U"プレイ").drawAt(600, 390);
 			font_35_italy(U"作者").drawAt(600, 480);
 
@@ -231,13 +231,10 @@ void Main() {
 					if (gaming_time.s() > red_brock)brock_p.draw(HSV(p.H));
 					else brock_p.draw(Palette::Red);
 				}
-				if (game_stop)font_75_italy(U"クリックして再開").drawAt(800 * 0.75, 400 * 0.75);
-				else {
-					font_75_italy(U"クリックしてスタート").drawAt(800 * 0.75, 400 * 0.75);
-					font_25_italy(U"途中でクリックすると一時停止します").drawAt(800 * 0.75, 500 * 0.75);
-				}
+				if (!game_stop)font_75_italy(U"クリックしてスタート").drawAt(600, 300);
+
 				//スコアの表示
-				Circle(40, 40, 40).drawPie(0, ToRadians(gaming_time.s() * 6), Palette::Red);
+				Circle(40, 40, 40).drawPie(ToRadians(gaming_time.s() * 6), ToRadians(360 - gaming_time.s() * 6), Palette::Red);
 				font_25_italy(60 - gaming_time.s()).drawAt(40, 40, Palette::Yellow);
 				font_25_italy(U"Score:").draw(10, 110, Palette::Lightyellow);
 				font_25_italy(near_score).draw(10, 135, Palette::Springgreen);
@@ -247,7 +244,13 @@ void Main() {
 					if (game_hp)Rect(10, i, 40, 5).draw(HSV((i - 180) / (400. / 360.)));
 				}
 				continue;
-			}
+			}/*
+			else if (MouseL.down()) {
+				game_stop++;
+				gaming_time.pause();
+				gameplay.pause();
+				continue;
+			}*/
 			//ロケットの移動
 
 			if (abs(rocket.x - Cursor::Pos().x) <= 50 && abs(rocket.y - Cursor::Pos().y) <= 50)goto loop3;
@@ -264,12 +267,12 @@ void Main() {
 			if (Scene::FrameCount() % (120 / (difficulty + 1)) == 0) {
 				double start_x = rand() % 2000 - 400, end_x = rand() % 1200;
 				double degree = 90 - ToDegrees(atan2(500, end_x - start_x));
-				brock.push_back({ start_x,0.,degree,gaming_time.s() / 20 * difficulty * 0.75 + 2 * (difficulty + 1) * 0.75,gaming_time.s() / 10 * difficulty * 0.75 + 5,Random(0,360),10000 });
+				brock.push_back({ start_x,0.,degree,gaming_time.s() / 20 * difficulty * 0.65 + 2 * (difficulty + 1) * 0.65,gaming_time.s() / 10 * difficulty * 0.4 + 5,Random(0,360),10000 });
 			}
 			else if (Scene::FrameCount() % (120 / (difficulty + 1)) == 120 / (difficulty + 1) / 2) {
-				double start_x = rand() % 2000 - 400, end_x = rocket.x + Random(-300, 300);
+				double start_x = rand() % 2000 - 400, end_x = rocket.x + Random(-100, 100);
 				double degree = 90 - ToDegrees(atan2(rocket.y, end_x - start_x));
-				brock.push_back({ start_x,0.,degree,gaming_time.s() / 20 * difficulty * 0.75 + 2 * (difficulty + 1) * 0.75,gaming_time.s() / 10 * difficulty * 0.75 + 5,Random(0,360),10000 });
+				brock.push_back({ start_x,0.,degree,gaming_time.s() / 20 * difficulty * 0.65 + 2 * (difficulty + 1) * 0.65,gaming_time.s() / 10 * difficulty * 0.4 + 5,Random(0,360),10000 });
 			}
 			//ブロックの当たり判定
 			for (int i = 0; i < brock.size(); i++) {
@@ -302,6 +305,14 @@ void Main() {
 				}
 				if (gaming_time.s() > red_brock)brock_p.draw(HSV(p.H));
 				else brock_p.draw(Palette::Red);
+				//尾を描く
+				double x = brock_p.x + cos(ToRadians(270 - p.degree)) * p.speed * 10;
+				double y = brock_p.y + sin(ToRadians(270 - p.degree)) * p.speed * 10;
+				double x2 = brock_p.x + cos(ToRadians(0 - p.degree)) * p.size;
+				double y2 = brock_p.y + sin(ToRadians(0 - p.degree)) * p.size;
+				double x3 = brock_p.x + cos(ToRadians(180 - p.degree)) * p.size;
+				double y3 = brock_p.y + sin(ToRadians(180 - p.degree)) * p.size;
+				Triangle(x, y, x2, y2, x3, y3).draw(HSV(0, 0.2));
 				//ブロックの移動
 				p.x += cos(ToRadians(90 - p.degree)) * Scene::DeltaTime() * p.speed * 60;
 				p.y += sin(ToRadians(90 - p.degree)) * Scene::DeltaTime() * p.speed * 60;
@@ -310,8 +321,14 @@ void Main() {
 			if (Scene::FrameCount() % 180 == 0)game_hp = min(game_hp + 1, 100);
 
 			//スコアの表示
-			Circle(40, 40, 40).drawPie(0, ToRadians(gaming_time.s() * 6), Palette::Red);
+			Circle(40, 40, 40).drawPie(ToRadians(gaming_time.s() * 6), ToRadians(360 - gaming_time.s() * 6), Palette::Red);
 			font_25_italy(60 - gaming_time.s()).drawAt(40, 40, Palette::Yellow);
+
+			if (gaming_time.s() == 30 || gaming_time.s() == 45 || gaming_time.s() == 50 || gaming_time.s() >= 55 && gaming_time.ms() % 1000 <= 300) {
+				Circle(600, 300, 150).drawPie(ToRadians(gaming_time.s() * 6), ToRadians(360 - gaming_time.s() * 6), HSV(0, 0.3));
+				font_120_italy(60 - gaming_time.s()).drawAt(600, 300, HSV(60, 0.3));
+			}
+
 			font_25_italy(U"Score:").draw(10, 110, Palette::Lightyellow);
 			font_25_italy(near_score).draw(10, 135, Palette::Springgreen);
 			//HPバー
