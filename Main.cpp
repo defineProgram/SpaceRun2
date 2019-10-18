@@ -14,9 +14,40 @@ struct Brock {
 	int near;
 };
 
+struct BallParticle {
+	ParticleSystem2D m_system;
+	Texture m_texture;
+	BallParticle(double x, double y, double size, int color)
+		:m_system(Vec2(x, y), Vec2(0, -120))
+	{
+
+		m_system.setTexture(Texture(U"GameData/particle.png"));
+		ParticleSystem2DParameters parameters;
+		parameters.rate = 300.0;
+		parameters.startSpeed = 50.0;
+		parameters.startLifeTime = 1.0;
+		parameters.startColor = HSV(color, 0.2);
+		parameters.startSize = size;
+		parameters.blendState = BlendState::Additive;
+		m_system.setParameters(parameters);
+
+		CircleEmitter2D circleEmitter;
+		circleEmitter.r = size;
+		m_system.setEmitter(circleEmitter);
+
+		m_system.prewarm();
+	}
+	void update(double x, double y) {
+		m_system.setPosition(Vec2(x, y));
+		m_system.update();
+		m_system.draw();
+	}
+};
+
 //ファイル入出力
 ifstream fin;
 ofstream fout;
+
 void wait(int ms) {
 	clock_t st = clock();
 	while ((clock() - st) * 1000 / CLOCKS_PER_SEC <= ms);
@@ -73,6 +104,9 @@ void Main() {
 	AudioAsset::Register(U"bomb", U"GameData/bomb.mp3", AssetParameter::LoadAsync());
 
 	Window::SetTitle(U"Space Run2");
+
+	vector<BallParticle>particle;
+
 	while (System::Update()) {
 		space.draw();
 		//start画面
@@ -268,11 +302,15 @@ void Main() {
 				double start_x = rand() % 2000 - 400, end_x = rand() % 1200;
 				double degree = 90 - ToDegrees(atan2(500, end_x - start_x));
 				brock.push_back({ start_x,0.,degree,gaming_time.s() / 20 * difficulty * 0.65 + 2 * (difficulty + 1) * 0.65,gaming_time.s() / 10 * difficulty * 0.4 + 5,Random(0,360),10000 });
+				BallParticle bp(start_x, 0, gaming_time.s() / 10 * difficulty * 0.4 + 5, brock.back().H);
+				particle.push_back(bp);
 			}
 			else if (Scene::FrameCount() % (120 / (difficulty + 1)) == 120 / (difficulty + 1) / 2) {
 				double start_x = rand() % 2000 - 400, end_x = rocket.x + Random(-100, 100);
 				double degree = 90 - ToDegrees(atan2(rocket.y, end_x - start_x));
 				brock.push_back({ start_x,0.,degree,gaming_time.s() / 20 * difficulty * 0.65 + 2 * (difficulty + 1) * 0.65,gaming_time.s() / 10 * difficulty * 0.4 + 5,Random(0,360),10000 });
+				BallParticle bp(start_x, 0, gaming_time.s() / 10 * difficulty * 0.4 + 5, brock.back().H);
+				particle.push_back(bp);
 			}
 			//ブロックの当たり判定
 			for (int i = 0; i < brock.size(); i++) {
@@ -300,19 +338,21 @@ void Main() {
 					else {
 						near_score += 300;
 					}
-					brock[i] = brock.back(); brock.pop_back(); i--;
+					brock[i] = brock.back(); brock.pop_back();
+					particle[i] = particle.back(); particle.pop_back(); i--;
 					continue;
 				}
 				if (gaming_time.s() > red_brock)brock_p.draw(HSV(p.H));
 				else brock_p.draw(Palette::Red);
 				//尾を描く
-				double x = brock_p.x + cos(ToRadians(270 - p.degree)) * p.speed * 10;
+				/*double x = brock_p.x + cos(ToRadians(270 - p.degree)) * p.speed * 10;
 				double y = brock_p.y + sin(ToRadians(270 - p.degree)) * p.speed * 10;
 				double x2 = brock_p.x + cos(ToRadians(0 - p.degree)) * p.size;
 				double y2 = brock_p.y + sin(ToRadians(0 - p.degree)) * p.size;
 				double x3 = brock_p.x + cos(ToRadians(180 - p.degree)) * p.size;
 				double y3 = brock_p.y + sin(ToRadians(180 - p.degree)) * p.size;
-				Triangle(x, y, x2, y2, x3, y3).draw(HSV(0, 0.2));
+				Triangle(x, y, x2, y2, x3, y3).draw(HSV(0, 0.2));*/
+				particle[i].update(p.x, p.y);
 				//ブロックの移動
 				p.x += cos(ToRadians(90 - p.degree)) * Scene::DeltaTime() * p.speed * 60;
 				p.y += sin(ToRadians(90 - p.degree)) * Scene::DeltaTime() * p.speed * 60;
@@ -407,6 +447,7 @@ void Main() {
 				get_scores = false;
 				write_scores = false;
 				for (int i = 0; i < 10; i++)scores[i].clear();
+				particle.clear();
 				AudioAsset(U"kettei").play();
 			}
 		}
