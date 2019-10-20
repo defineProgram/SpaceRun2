@@ -155,7 +155,7 @@ void Main() {
 		else if (now_situation == 1) {
 			tutorial.play();
 			//文字の描画
-			font_75_italy(U"チュートリアル").drawAt(600, 120, Palette::Deepskyblue);
+			font_75_italy(U"遊び方").drawAt(600, 120, Palette::Deepskyblue);
 			font_25_italy(U"降ってくるカラフルな隕石を避けましょう！").drawAt(600, 225);
 			font_25_italy(U"隕石に近ければ近いほどスコアが高くなります").drawAt(600, 265);
 			font_25_italy(U"操作方法：マウスを動かしてロケットを動かす").drawAt(600, 300);
